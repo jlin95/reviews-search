@@ -23,3 +23,7 @@ Builds the app for production to the `build` folder.<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+Deployment Status:
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/cf2b1af7-51bd-4750-92bd-134618792c3b/deploy-status)](https://app.netlify.com/sites/nytimes-reviews/deploys)

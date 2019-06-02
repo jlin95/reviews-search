@@ -2,6 +2,10 @@ Description:
 `search-app` allows users to search for books by entering a query (Title, Author, etc). 
 The reviews will show on the page.
 
+- User can enter a search query into an input field
+- User can submit the query. This will call an API that will return an array of books with the corresponding data (Title, Author, Published Date, Picture, etc)
+- User can see the list of reviews appearing on the page
+
 ## Getting Started
 
 If you use yarn: 

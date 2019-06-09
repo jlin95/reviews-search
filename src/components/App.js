@@ -1,5 +1,7 @@
-import React, { useState }from 'react'
+import React, { useEffect, useState }from 'react'
+import LoadingIndicator from './LoadingIndicator'
 import SearchResults from './SearchResults'
+import axios from 'axios'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -7,7 +9,7 @@ const Container = styled.div`
   padding: 40px;
   text-align: center;
 `
-const Prompt = styled.h3`
+const Prompt = styled.h4`
 `
 
 const SearchBar = styled.input`
@@ -33,23 +35,36 @@ const Button = styled.button`
 // returns num_results, results, status
 const App = () => {
 
-  const [results, setResults] = useState([])
   const [author, setAuthor] = useState('')
+  const [error, setHasError] = useState(false)
+  const [results, setResults] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [url, setUrl] = useState(`https://api.nytimes.com/svc/books/v3/reviews.json?author=''&api-key=${process.env.REACT_APP_NYTIMES_API_KEY}`)
 
-  const formQuery = string => `author=${string}&`
-  const API_URI = `https://api.nytimes.com/svc/books/v3/reviews.json?${formQuery(author)}api-key=${process.env.REACT_APP_NYTIMES_API_KEY}`
 
-
-  const fetchResults = () => fetch(API_URI).then(response => {
-    return response.json()
-  }).then(json => setResults(json))
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      setHasError(false)
+      try {
+        const result = await axios(url)
+        setResults(result.data)
+      } catch (error) {
+        setHasError(true)
+      }
+      setLoading(false)
+    }
+    fetchData()
+  }, [url])
 
   return (
     <Container>
-      <Prompt>Key in your search terms here, via ISBN number, author, or book title. They can also be keyed in at all at once too.</Prompt>
-      <SearchBar type="text" onChange={e => setAuthor(e.target.value)}/>
-      <Button onClick={fetchResults}>Click</Button>
-      <SearchResults results={results} />
+      <Prompt>Find all reviews related to an author.</Prompt>
+      <SearchBar type="text" onChange={e => setAuthor(e.target.value)} value={author}/>
+      <Button onClick={() => setUrl(`https://api.nytimes.com/svc/books/v3/reviews.json?author=${author}&api-key=${process.env.REACT_APP_NYTIMES_API_KEY}`)}>Click</Button>
+      <LoadingIndicator loading={loading}/>
+      {error && <div>Oops. Did you type in any search term at all?</div>}
+      {results && <SearchResults results={results} />}
     </Container>
   )
 }

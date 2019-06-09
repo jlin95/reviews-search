@@ -32,39 +32,41 @@ const Button = styled.button`
   margin-bottom: 24px;
 `
 
-// returns num_results, results, status
 const App = () => {
 
-  const [author, setAuthor] = useState('')
+  const [author, setAuthor] = useState(null)
   const [error, setHasError] = useState(false)
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [url, setUrl] = useState(`https://api.nytimes.com/svc/books/v3/reviews.json?author=''&api-key=${process.env.REACT_APP_NYTIMES_API_KEY}`)
-
+  const [url, setUrl] = useState(null)
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      setHasError(false)
-      try {
-        const result = await axios(url)
-        setResults(result.data)
-      } catch (error) {
-        setHasError(true)
+    if (url) {
+      const fetchData = async () => {
+        setLoading(true)
+        setHasError(false)
+        try {
+          const result = await axios(url)
+          setResults(result.data)
+        } catch (error) {
+          setHasError(true)
+        }
+        setLoading(false)
       }
-      setLoading(false)
+      fetchData()
     }
-    fetchData()
   }, [url])
 
   return (
     <Container>
       <Prompt>Find all reviews related to an author.</Prompt>
       <SearchBar type="text" onChange={e => setAuthor(e.target.value)} value={author}/>
-      <Button onClick={() => setUrl(`https://api.nytimes.com/svc/books/v3/reviews.json?author=${author}&api-key=${process.env.REACT_APP_NYTIMES_API_KEY}`)}>Click</Button>
+      <Button onClick={() => {
+        setUrl(`https://api.nytimes.com/svc/books/v3/reviews.json?author=${author}&api-key=${process.env.REACT_APP_NYTIMES_API_KEY}`)
+      }}>Click</Button>
       <LoadingIndicator loading={loading}/>
       {error && <div>Oops. Did you type in any search term at all?</div>}
-      {results && <SearchResults results={results} />}
+      {!error && results && <SearchResults data={results} />}
     </Container>
   )
 }
